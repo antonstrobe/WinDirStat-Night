@@ -19,6 +19,7 @@
 
 #include "pch.h"
 #include "TreeListControl.h"
+#include "GraphColorSelection.h"
 
 class CItem;
 class CItemDupe;
@@ -35,6 +36,7 @@ struct alignas(std::hardware_destructive_interference_size) SExtensionRecord
     std::atomic<ULONGLONG> files = 0;
     std::atomic<ULONGLONG> bytes = 0;
     COLORREF color = 0;
+    COLORREF classicColor = 0;
 
     // Use relaxed memory ordering for simple accumulation operations
     void AddFile(const ULONGLONG size) noexcept
@@ -99,6 +101,9 @@ public:
     void SetScanTitlePrefix(const std::wstring& prefix) const;
 
     COLORREF GetCushionColor(const std::wstring& ext);
+    COLORREF GetClassicCushionColor(const std::wstring& ext);
+    void UpdateGraphColorSelection();
+    bool IsGraphColorSelected(const CItem* item) const;
     COLORREF GetZoomColor() const;
 
     CExtensionData* GetExtensionData();
@@ -180,6 +185,7 @@ private:
 
     std::mutex m_extensionMutex;
     CExtensionData m_extensionData;    // Base for the extension view and cushion colors
+    GraphColorSelection<CItem> m_graphColorSelection;
 
     std::vector<CItem*> m_reselectChildStack; // Stack for the "Re-select Child"-Feature
 

@@ -1081,7 +1081,7 @@ COLORREF CItem::GetGraphColor() const
 {
     if (IsTypeOrFlag(IT_UNKNOWN))
     {
-        if (COptions::TreeMapPalette == 0) return RGB(88, 88, 88);
+        if (COptions::TreeMapPalette == 0 && !CWinDirStatModel::Get()->IsGraphColorSelected(this)) return RGB(88, 88, 88);
         return RGB(255, 255, 0) | CTreeMap::COLORFLAG_LIGHTER;
     }
 
@@ -1092,18 +1092,20 @@ COLORREF CItem::GetGraphColor() const
 
     if (IsTypeOrFlag(IT_FREESPACE))
     {
-        if (COptions::TreeMapPalette == 0) return RGB(32, 32, 32);
+        if (COptions::TreeMapPalette == 0 && !CWinDirStatModel::Get()->IsGraphColorSelected(this)) return RGB(32, 32, 32);
         return RGB(100, 100, 100) | CTreeMap::COLORFLAG_DARKER;
     }
 
     if (IsTypeOrFlag(IT_HLINKS, IT_HLINKS_SET, IT_HLINKS_IDX, IT_HLINKS_FILE))
     {
-        if (COptions::TreeMapPalette == 0) return RGB(64, 64, 64);
+        if (COptions::TreeMapPalette == 0 && !CWinDirStatModel::Get()->IsGraphColorSelected(this)) return RGB(64, 64, 64);
         return RGB(200, 150, 100) | CTreeMap::COLORFLAG_LIGHTER;
     }
 
     if (IsTypeOrFlag(IT_FILE))
     {
+        if (CWinDirStatModel::Get()->IsGraphColorSelected(this))
+            return CWinDirStatModel::Get()->GetClassicCushionColor(GetExtension());
         return CWinDirStatModel::Get()->GetCushionColor(GetExtension());
     }
 

@@ -65,6 +65,7 @@ void CWinDirStatModel::ClearScanState()
 
     // Reset extension data
     GetExtensionData()->clear();
+    m_graphColorSelection = {};
     m_registeredExtensions.clear();
 
     // Cleanup visual artifacts - controllers manage their own root items
@@ -218,6 +219,48 @@ COLORREF CWinDirStatModel::GetCushionColor(const std::wstring & ext)
 COLORREF CWinDirStatModel::GetZoomColor() const
 {
     return COptions::TreeMapPalette == 0 ? RGB(0, 0, 0) : RGB(0, 0, 255);
+}
+
+COLORREF CWinDirStatModel::GetClassicCushionColor(const std::wstring& ext)
+{
+    const auto record = m_extensionData.find(ext);
+    return record != m_extensionData.end() ? record->second.classicColor : RGB(0, 0, 0);
+}
+
+void CWinDirStatModel::UpdateGraphColorSelection()
+{
+    m_graphColorSelection = {};
+    if (COptions::TreeMapPalette != 0) return;
+    using Kind = GraphColorSelection<CItem>::Kind;
+    switch (CMainFrame::Get()->GetLogicalFocus())
+    {
+    case LF_FILETREE:
+    case LF_TOPLIST:
+    case LF_DUPELIST:
+    case LF_SEARCHLIST:
+        m_graphColorSelection.kind = Kind::Items;
+        for (const auto* item : GetAllSelected())
+        {
+            if (!item) continue;
+            m_graphColorSelection.items.insert(item);
+            if (item->IsTypeOrFlag(ITF_HARDLINK))
+                if (const auto* displayItem = item->FindHardlinksIndexItem())
+                    m_graphColorSelection.items.insert(displayItem);
+        }
+        break;
+    case LF_EXTLIST:
+        m_graphColorSelection.kind = Kind::Extensions;
+        if (IsHighlightUnregistered()) m_graphColorSelection.extensions = GetHighlightExtensions();
+        else m_graphColorSelection.extensions.insert(GetHighlightExtension());
+        break;
+    default:
+        break;
+    }
+}
+
+bool CWinDirStatModel::IsGraphColorSelected(const CItem* item) const
+{
+    return COptions::TreeMapPalette == 0 && m_graphColorSelection.Contains(item);
 }
 
 CExtensionData* CWinDirStatModel::GetExtensionData()
@@ -488,18 +531,26 @@ void CWinDirStatModel::RebuildExtensionData()
     // Rebuild the small palette so applying settings can change existing results.
     std::vector<COLORREF> colors;
     CTreeMap::GetDefaultPalette(colors);
+    std::vector<COLORREF> classicColors;
+    CTreeMap::GetPalette(classicColors, false);
 
     // Assign palette colors by rank: distinct primary colors first, then the shared fallback
     for (size_t rank = 0; rank < units.size(); ++rank)
     {
         const COLORREF color = colors[std::min(rank, colors.size() - 1)];
+        const COLORREF classicColor = classicColors[std::min(rank, classicColors.size() - 1)];
         if (units[rank].second == groupUnit)
         {
-            for (const auto& it : unregistered) it->second.color = color;
+            for (const auto& it : unregistered)
+            {
+                it->second.color = color;
+                it->second.classicColor = classicColor;
+            }
         }
         else
         {
             individual[units[rank].second]->second.color = color;
+            individual[units[rank].second]->second.classicColor = classicColor;
         }
     }
 }

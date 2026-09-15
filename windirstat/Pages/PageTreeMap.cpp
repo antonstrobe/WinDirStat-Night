@@ -261,7 +261,7 @@ void CPageTreeMap::OnBnClickedReset()
     CTreeMap::Options o;
     if (m_altered)
     {
-        o = CTreeMap::GetDefaults();
+        o = m_palette == 0 ? CTreeMap::GetDefaults() : CTreeMap::GetOriginalDefaults();
         m_undo = m_options;
     }
     else
@@ -283,7 +283,24 @@ void CPageTreeMap::OnBnClickedReset()
 
 void CPageTreeMap::OnPaletteChanged()
 {
-    OnSomethingChanged();
+    if (!IsInitialized()) return;
+    const int previousPalette = m_palette;
+    UpdateData();
+    if (previousPalette != m_palette)
+    {
+        const auto preset = m_palette == 0 ? CTreeMap::GetDefaults() : CTreeMap::GetOriginalDefaults();
+        m_options.brightness = preset.brightness;
+        m_options.height = preset.height;
+        m_options.scaleFactor = preset.scaleFactor;
+        m_options.ambientLight = preset.ambientLight;
+        m_options.lightSourceX = preset.lightSourceX;
+        m_options.lightSourceY = preset.lightSourceY;
+        m_options.grid = preset.grid;
+        m_options.gridColor = preset.gridColor;
+    }
+    UpdateData(FALSE);
+    ValuesAltered();
+    SetModified();
 }
 
 void CPageTreeMap::UpdatePaletteStatus()

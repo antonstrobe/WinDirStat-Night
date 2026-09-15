@@ -218,6 +218,7 @@ public:
 
     // Good values
     static Options GetDefaults();
+    static Options GetOriginalDefaults();
 
     // Construct the treemap generator and register the callback interface.
     CTreeMap();

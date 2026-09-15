@@ -295,6 +295,16 @@ CTreeMap::Options CTreeMap::GetDefaults()
     return DefaultOptions;
 }
 
+CTreeMap::Options CTreeMap::GetOriginalDefaults()
+{
+    // Unmodified rendering defaults from upstream release/v2.8.0.
+    Options options = DefaultOptions;
+    options.grid = false;
+    options.brightness = 0.88;
+    options.height = 0.38;
+    return options;
+}
+
 CTreeMap::CTreeMap()
 {
     SetOptions(&DefaultOptions);
@@ -826,6 +836,19 @@ void CTreeMap::RenderLeaf(const BitmapView bitmap, const CItem* item,
         }
     }
 
+    if (!item->IsTypeOrFlag(ITF_PREVIEW)
+        && CWinDirStatModel::Get()->IsGraphColorSelected(item))
+    {
+        // Give selected files the original cushion even on a flat gray map.
+        // A local renderer keeps parallel workers independent.
+        CTreeMap classic;
+        const auto options = GetOriginalDefaults();
+        classic.SetOptions(&options);
+        Surface classicSurface{};
+        AddRidge(rc, classicSurface, options.height * options.scaleFactor);
+        classic.RenderRectangle(bitmap, rc, classicSurface, item->TmiGetGraphColor());
+        return;
+    }
     RenderRectangle(bitmap, rc, surface, item->TmiGetGraphColor());
 }
 

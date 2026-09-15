@@ -1,4 +1,4 @@
-﻿param([Parameter(Mandatory)][string]$ExePath)
+﻿param([Parameter(Mandatory)][string]$ExePath, [ValidateSet(0,1)][int]$Palette = 0)
 $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $runDir = Join-Path $repo ('build\night-smoke\' + [guid]::NewGuid().ToString('N'))
@@ -7,7 +7,7 @@ New-Item -ItemType Directory -Path (Join-Path $fixture 'documents') -Force | Out
 $testExe = Join-Path $runDir 'WinDirStat.exe'
 Copy-Item -LiteralPath $ExePath -Destination $testExe
 # An isolated profile prevents the test from changing the user's settings.
-[IO.File]::WriteAllText((Join-Path $runDir 'WinDirStat.ini'), "[Options]`r`nDarkMode=1`r`nLanguageId=1033`r`nAutoElevate=0`r`n", [Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $runDir 'WinDirStat.ini'), "[Options]`r`nDarkMode=1`r`nLanguageId=1033`r`nAutoElevate=0`r`n[TreeMapView]`r`nTreeMapPalette=$Palette`r`n", [Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllBytes((Join-Path $fixture 'sample.bin'), [byte[]]::new(1048576))
 [IO.File]::WriteAllText((Join-Path $fixture 'documents\пример.txt'), 'Проверка русских имён файлов.', [Text.UTF8Encoding]::new($false))
 [IO.File]::WriteAllBytes((Join-Path $fixture 'documents\empty.txt'), [byte[]]::new(0))
@@ -34,5 +34,7 @@ foreach ($file in $expected) {
     $values = @($found[0].PSObject.Properties.Value)
     if ([long]$values[3] -ne $file.Length) { throw "Incorrect logical size: $($file.Name)" }
 }
-Write-Output "PASS: 3 files, 1 subdirectory, $total bytes; Unicode and empty file verified."
+$saved = [IO.File]::ReadAllText((Join-Path $runDir 'WinDirStat.ini'))
+if ($saved -notmatch "(?m)^TreeMapPalette=$Palette\r?$") { throw 'The selected palette was not preserved in the portable profile.' }
+Write-Output "PASS: palette $Palette; 3 files, 1 subdirectory, $total bytes; Unicode, empty file and saved palette verified."
 Write-Output "Evidence: $csv"

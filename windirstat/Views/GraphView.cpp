@@ -125,6 +125,9 @@ void CGraphView::OnDraw(CDC* pDC)
     CRect rect = ClientRectOf(this);
     if (!PrepareDrawing(pDC, rect)) return;
 
+    // Snapshot the logical selection before any render workers run.
+    CWinDirStatModel::Get()->UpdateGraphColorSelection();
+
     CDC memoryDc;
     if (!memoryDc.CreateCompatibleDC(pDC))
     {
@@ -388,6 +391,8 @@ void CGraphView::OnUpdate(CWnd* sender, const MODEL_CHANGE change, CItem* item)
     case MODEL_CHANGE_SELECTION_REFRESH:
     case MODEL_CHANGE_SELECTION_STYLE:
     case MODEL_CHANGE_EXTENSION_SELECTION:
+        // Keep geometry, but remove the previous colored selection from the bitmap.
+        if (COptions::TreeMapPalette == 0) DiscardRenderCache(false);
         CWinDirStatPane::OnUpdate(sender, change, item);
         CMainFrame::Get()->UpdatePaneText();
         break;

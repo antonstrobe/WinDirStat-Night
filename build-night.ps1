@@ -12,7 +12,14 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed ($LASTEXITCODE)." }
 $arch = if ($Platform -eq 'Win32') { 'x86' } else { $Platform.ToLowerInvariant() }
 $exe = Join-Path $repo "build\WinDirStat_$arch.exe"
 if (-not (Test-Path -LiteralPath $exe)) { throw "Build output is missing: $exe" }
-if ($arch -eq 'x64') { & (Join-Path $repo 'night\Test-NightScan.ps1') -ExePath $exe }
+if ($arch -eq 'x64') {
+    & $msbuild (Join-Path $repo 'night\NightTests.vcxproj') /m /t:Build /p:Configuration=Release /p:Platform=x64 /nologo
+    if ($LASTEXITCODE -ne 0) { throw 'Selection test build failed.' }
+    & (Join-Path $repo 'build\night-unit\NightTests.exe')
+    if ($LASTEXITCODE -ne 0) { throw 'Selection regression tests failed.' }
+    & (Join-Path $repo 'night\Test-ClassicPalette.ps1')
+    foreach ($palette in 0, 1) { & (Join-Path $repo 'night\Test-NightScan.ps1') -ExePath $exe -Palette $palette }
+}
 $package = Join-Path $repo "publish\WinDirStat-Night-$arch"
 New-Item -ItemType Directory -Path $package -Force | Out-Null
 Copy-Item -LiteralPath $exe -Destination (Join-Path $package 'WinDirStat.exe')
