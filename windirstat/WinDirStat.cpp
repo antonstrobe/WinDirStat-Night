@@ -225,7 +225,7 @@ CString AFXGetRegPath(LPCTSTR lpszPostFix, LPCTSTR)
 {
     // This overrides an internal MFC function that causes CWinAppEx
     // to malfunction when operated in portable mode
-    return CString(L"Software\\WinDirStat\\WinDirStat\\") + lpszPostFix + L"\\";
+    return CString(L"Software\\WinDirStat Night\\WinDirStat Night\\") + lpszPostFix + L"\\";
 }
 
 class CWinDirStatCommandLineInfo final : public CCommandLineInfo

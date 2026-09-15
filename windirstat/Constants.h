@@ -53,7 +53,7 @@ namespace wds
     inline constexpr auto chrAttributeEncrypted    = L'E'; /*FILE_ATTRIBUTE_ENCRYPTED*/
     inline constexpr auto chrAttributeSparse       = L'Z'; /*FILE_ATTRIBUTE_SPARSE*/
 
-    inline constexpr auto strWinDirStat = L"WinDirStat";
+    inline constexpr auto strWinDirStat = L"WinDirStat Night";
     inline constexpr std::wstring_view strAlpha{ L"ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
     inline constexpr int alphaSize = std::ssize(strAlpha);
 

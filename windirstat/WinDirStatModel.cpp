@@ -217,7 +217,7 @@ COLORREF CWinDirStatModel::GetCushionColor(const std::wstring & ext)
 
 COLORREF CWinDirStatModel::GetZoomColor() const
 {
-    return RGB(0, 0, 255);
+    return COptions::TreeMapPalette == 0 ? RGB(0, 0, 0) : RGB(0, 0, 255);
 }
 
 CExtensionData* CWinDirStatModel::GetExtensionData()
@@ -485,12 +485,9 @@ void CWinDirStatModel::RebuildExtensionData()
     // Sort the color units based on total bytes in descending order
     std::ranges::sort(units, [](const auto& a, const auto& b) { return a.first > b.first; });
 
-    // Initialize colors if not already done
-    static std::vector<COLORREF> colors;
-    if (colors.empty())
-    {
-        CTreeMap::GetDefaultPalette(colors);
-    }
+    // Rebuild the small palette so applying settings can change existing results.
+    std::vector<COLORREF> colors;
+    CTreeMap::GetDefaultPalette(colors);
 
     // Assign palette colors by rank: distinct primary colors first, then the shared fallback
     for (size_t rank = 0; rank < units.size(); ++rank)

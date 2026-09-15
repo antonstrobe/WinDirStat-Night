@@ -1,3 +1,15 @@
+# WinDirStat Night
+
+A personal fork of WinDirStat 2.8.0 with a dark interface and a selectable dark grayscale or original color treemap palette.
+
+- [Download the portable Windows x64 release](https://github.com/antonstrobe/WinDirStat-Night/releases/latest)
+- [Описание и инструкции на русском](NIGHT-README.md)
+- Change the map palette in **Settings → Configure WinDirStat → Treemap → Map palette**. Apply updates the map and legend without rescanning; Cancel leaves the applied palette unchanged.
+- Build from source with `./build-night.ps1 -Platform x64`, or run the **Night portable** GitHub Actions workflow.
+
+Based on upstream tag `release/v2.8.0`. This is an unofficial modified distribution under the original GPL license.
+
+---
 # WinDirStat - Windows Directory Statistics
 
 ## Description

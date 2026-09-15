@@ -209,11 +209,12 @@ public:
         static constexpr int RoundDouble(double d) { return static_cast<int>(d + (d < 0.0 ? -0.5 : 0.5)); }
     };
 
-    // Get a good palette of 18 colors
+    // Get 64 distinct dark grayscale colors
     static void GetDefaultPalette(std::vector<COLORREF>& palette);
+    static void GetPalette(std::vector<COLORREF>& palette, bool grayscale);
 
     // Build the small demo tree used by treemap previews.
-    [[nodiscard]] static std::unique_ptr<CItem> BuildDemoTree();
+    [[nodiscard]] static std::unique_ptr<CItem> BuildDemoTree(bool grayscale);
 
     // Good values
     static Options GetDefaults();
@@ -283,39 +284,107 @@ protected:
     // Default tree map options
     static constexpr Options DefaultOptions = {
         .style = TreeMapLayout::Style::Rows,
-        .grid = false,
+        .grid = true,
         .showExtensions = false,
         .showFolderFrames = false,
         .folderFramesDrawThreshold = 5,
         .gridColor = RGB(0, 0, 0),
-        .brightness = 0.88,
-        .height = 0.38,
+        .brightness = 0.6,
+        .height = 0.0,
         .scaleFactor = 0.91,
         .ambientLight = 0.13,
         .lightSourceX = -1.0,
         .lightSourceY = -1.0
     };
 
-    // Standard palette for WinDirStat
+    // Dark grayscale palette. Keep distinct luminance; do not normalize colors.
     static constexpr COLORREF DefaultCushionColors[] = {
-        RGB(  0,   0, 255),  // Blue
-        RGB(255,   0,   0),  // Red
-        RGB(  0, 255,   0),  // Green
-        RGB(255, 255,   0),  // Yellow
-        RGB(  0, 255, 255),  // Cyan
-        RGB(255,   0, 255),  // Magenta
-        RGB(255, 170,   0),  // Orange
-        RGB(  0,  85, 255),  // Dodger Blue
-        RGB(255,   0,  85),  // Hot Pink
-        RGB( 85, 255,   0),  // Lime Green
-        RGB(170,   0, 255),  // Violet
-        RGB(  0, 255,  85),  // Spring Green
-        RGB(255,   0, 170),  // Deep Pink
-        RGB(  0, 170, 255),  // Sky Blue
-        RGB(255,  85,   0),  // Orange Red
-        RGB(  0, 255, 170),  // Aquamarine
-        RGB( 85,   0, 255),  // Indigo
-        RGB(255, 255, 255),  // White
+        RGB( 80,  80,  80),
+        RGB( 48,  48,  48),
+        RGB( 96,  96,  96),
+        RGB( 64,  64,  64),
+        RGB( 72,  72,  72),
+        RGB( 40,  40,  40),
+        RGB( 88,  88,  88),
+        RGB( 56,  56,  56),
+        RGB( 84,  84,  84),
+        RGB( 52,  52,  52),
+        RGB(100, 100, 100),
+        RGB( 68,  68,  68),
+        RGB( 76,  76,  76),
+        RGB( 44,  44,  44),
+        RGB( 92,  92,  92),
+        RGB( 60,  60,  60),
+        RGB( 82,  82,  82),
+        RGB( 50,  50,  50),
+        RGB( 98,  98,  98),
+        RGB( 66,  66,  66),
+        RGB( 74,  74,  74),
+        RGB( 42,  42,  42),
+        RGB( 90,  90,  90),
+        RGB( 58,  58,  58),
+        RGB( 86,  86,  86),
+        RGB( 54,  54,  54),
+        RGB(102, 102, 102),
+        RGB( 70,  70,  70),
+        RGB( 78,  78,  78),
+        RGB( 46,  46,  46),
+        RGB( 94,  94,  94),
+        RGB( 62,  62,  62),
+        RGB( 81,  81,  81),
+        RGB( 49,  49,  49),
+        RGB( 97,  97,  97),
+        RGB( 65,  65,  65),
+        RGB( 73,  73,  73),
+        RGB( 41,  41,  41),
+        RGB( 89,  89,  89),
+        RGB( 57,  57,  57),
+        RGB( 85,  85,  85),
+        RGB( 53,  53,  53),
+        RGB(101, 101, 101),
+        RGB( 69,  69,  69),
+        RGB( 77,  77,  77),
+        RGB( 45,  45,  45),
+        RGB( 93,  93,  93),
+        RGB( 61,  61,  61),
+        RGB( 83,  83,  83),
+        RGB( 51,  51,  51),
+        RGB( 99,  99,  99),
+        RGB( 67,  67,  67),
+        RGB( 75,  75,  75),
+        RGB( 43,  43,  43),
+        RGB( 91,  91,  91),
+        RGB( 59,  59,  59),
+        RGB( 87,  87,  87),
+        RGB( 55,  55,  55),
+        RGB(103, 103, 103),
+        RGB( 71,  71,  71),
+        RGB( 79,  79,  79),
+        RGB( 47,  47,  47),
+        RGB( 95,  95,  95),
+        RGB( 63,  63,  63),
+    };
+
+    // Original upstream palette, retained for reversible color selection.
+    static constexpr COLORREF OriginalCushionColors[] = {
+        RGB(  0,   0, 255),
+        RGB(255,   0,   0),
+        RGB(  0, 255,   0),
+        RGB(255, 255,   0),
+        RGB(  0, 255, 255),
+        RGB(255,   0, 255),
+        RGB(255, 170,   0),
+        RGB(  0,  85, 255),
+        RGB(255,   0,  85),
+        RGB( 85, 255,   0),
+        RGB(170,   0, 255),
+        RGB(  0, 255,  85),
+        RGB(255,   0, 170),
+        RGB(  0, 170, 255),
+        RGB(255,  85,   0),
+        RGB(  0, 255, 170),
+        RGB( 85,   0, 255),
+        RGB(255, 255, 255),
     };
 
     static constexpr int HitTestCellSize = 16;
@@ -349,10 +418,12 @@ public:
     CTreeMapPreview();
     ~CTreeMapPreview() override;
     void SetOptions(const CTreeMap::Options* options);
+    void SetPalette(bool grayscale);
 
 protected:
     void BuildDemoData();
 
+    bool m_grayscale = true;
     CItem* m_root;                  // Demo tree
     CTreeMap m_treeMap;             // Our treemap creator
 

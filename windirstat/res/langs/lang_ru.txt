@@ -343,3 +343,11 @@ MSI_OptionsDlgDescription=Выберите параметры ниже, чтоб
 MSI_OptionsDlgDesktopShortcut=Создать ярлык на рабочем столе
 MSI_OptionsDlgHeaderTitle=Параметры установки
 MSI_OptionsDlgTitle=Параметры WinDirStat
+
+IDS_PAGE_TREEMAP_PALETTE=Палитра карты
+IDS_PAGE_TREEMAP_PALETTE_GRAY=Тёмно-серая
+IDS_PAGE_TREEMAP_PALETTE_COLOR=Цветная (исходная)
+IDS_PAGE_TREEMAP_PALETTE_GRAY_SELECTED=✓ Выбрана тёмно-серая палитра
+IDS_PAGE_TREEMAP_PALETTE_COLOR_SELECTED=✓ Выбрана цветная палитра
+IDS_PAGE_TREEMAP_PALETTE_GRAY_TIP=Выбрана тёмно-серая палитра. Выберите цветную, чтобы вернуть исходные цвета. Нажмите «Применить» или «ОК»: повторное сканирование не требуется.
+IDS_PAGE_TREEMAP_PALETTE_COLOR_TIP=Выбрана исходная цветная палитра. Выберите тёмно-серую, чтобы вернуть серые оттенки. Нажмите «Применить» или «ОК»: повторное сканирование не требуется.

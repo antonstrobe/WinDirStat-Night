@@ -344,3 +344,11 @@ MSI_OptionsDlgDescription=Select the options below to customize your WinDirStat 
 MSI_OptionsDlgDesktopShortcut=Create Desktop Shortcut
 MSI_OptionsDlgHeaderTitle=Install Options
 MSI_OptionsDlgTitle=WinDirStat Options
+
+IDS_PAGE_TREEMAP_PALETTE=Map &palette
+IDS_PAGE_TREEMAP_PALETTE_GRAY=Dark grayscale
+IDS_PAGE_TREEMAP_PALETTE_COLOR=Original colors
+IDS_PAGE_TREEMAP_PALETTE_GRAY_SELECTED=✓ Dark grayscale selected
+IDS_PAGE_TREEMAP_PALETTE_COLOR_SELECTED=✓ Original colors selected
+IDS_PAGE_TREEMAP_PALETTE_GRAY_TIP=Dark grayscale is selected. Choose Original colors to restore the colored map. Apply or OK updates the current scan without rescanning.
+IDS_PAGE_TREEMAP_PALETTE_COLOR_TIP=Original colors are selected. Choose Dark grayscale to return to dark gray shades. Apply or OK updates the current scan without rescanning.

@@ -74,10 +74,11 @@ public:
         }
         helper.m_bScroll = FALSE;
 
-        // Dark mode tabs have a black background so set text to be white
+        // Active tabs use a green fill and bold text so selection is not color-only.
         if (DarkMode::IsDarkModeActive())
         {
-            helper.SetActiveTabColor(DarkMode::WdsSysColor(COLOR_WINDOWTEXT));
+            helper.SetActiveTabColor(DarkMode::WdsSysColor(COLOR_HIGHLIGHT));
+            helper.SetActiveTabTextColor(DarkMode::WdsSysColor(COLOR_HIGHLIGHTTEXT));
             helper.SetTabBorderSize(1);
         }
     }

@@ -175,7 +175,7 @@ public:
     inline static Setting<bool> UseSizeSuffixes{ OptionsGeneral, L"UseSizeSuffixes", true };
     inline static Setting<bool> ListFullRowSelection{ OptionsGeneral, L"ListFullRowSelection", true };
     inline static Setting<bool> ListGrid{ OptionsGeneral, L"ListGrid", false };
-    inline static Setting<bool> ListStripes{ OptionsGeneral, L"ListStripes", false };
+    inline static Setting<bool> ListStripes{ OptionsGeneral, L"ListStripes", true };
     inline static Setting<bool> PacmanAnimation{ OptionsGeneral, L"PacmanAnimation", true };
     inline static Setting<bool> ScanForDuplicates{ OptionsDupeTree, L"ScanForDuplicates", false };
     inline static Setting<bool> SearchWholePhrase{ OptionsSearch, L"SearchWholePhrase", false };
@@ -201,7 +201,7 @@ public:
     inline static Setting<bool> ShowStatusBar{ OptionsGeneral, L"ShowStatusBar", true };
     inline static Setting<bool> ShowTimeSpent{ OptionsFileTree, L"ShowTimeSpent", true };
     inline static Setting<bool> ShowToolBar{ OptionsGeneral, L"ShowToolBar", true };
-    inline static Setting<bool> LargeToolBar{ OptionsGeneral, L"LargeToolBar", false };
+    inline static Setting<bool> LargeToolBar{ OptionsGeneral, L"LargeToolBar", true };
     inline static Setting<bool> ShowVisualization{ OptionsTreeMap, L"ShowVisualization", true };
     inline static Setting<bool> ShowUnknown{ OptionsGeneral, L"ShowUnknown", false };
     inline static Setting<bool> SkipDupeDetectionCloudLinks{ OptionsGeneral, L"SkipDupeDetectionCloudLinks", true };
@@ -230,7 +230,7 @@ public:
         { OptionsFileTree, L"FileTreeColor7", RGB(255, 255, 0) }
     };
     inline static Setting<COLORREF> TreeMapGridColor{ OptionsTreeMap, L"TreeMapGridColor", CTreeMap::GetDefaults().gridColor };
-    inline static Setting<COLORREF> TreeMapHighlightColor{ OptionsTreeMap, L"TreeMapHighlightColor", RGB(255, 255, 255) };
+    inline static Setting<COLORREF> TreeMapHighlightColor{ OptionsTreeMap, L"TreeMapHighlightColor", RGB(0, 0, 0) };
     inline static Setting<std::wstring> PermsColorAccount[PERMSRULECOUNT] =
     {
         { OptionsPerms, L"ColorAccount0", L"" },
@@ -260,7 +260,7 @@ public:
     inline static Setting<double> MainSplitterPos{ OptionsGeneral, L"MainSplitterPos", -1.0, 0.0, 1.0 };
     inline static Setting<double> SubSplitterPos{ OptionsGeneral, L"SubSplitterPos", -1.0, 0.0, 1.0 };
     inline static Setting<int> ConfigPage{ OptionsGeneral, L"ConfigPage", 0 };
-    inline static Setting<int> DarkMode{ OptionsGeneral, L"DarkMode", DM_USE_WINDOWS, DM_DISABLED, DM_USE_WINDOWS };
+    inline static Setting<int> DarkMode{ OptionsGeneral, L"DarkMode", DM_ENABLED, DM_DISABLED, DM_USE_WINDOWS };
     inline static Setting<int> LanguageId{ OptionsGeneral, L"LanguageId", 0 };
     // 0=Low, 1=Normal, 2=High
     inline static Setting<int> ProcessPriority{ OptionsGeneral, L"ProcessPriority", 1, 0, 2 };
@@ -281,6 +281,8 @@ public:
     inline static Setting<int> TreeMapLightSourceX{ OptionsTreeMap, L"TreeMapLightSourceX", CTreeMap::GetDefaults().GetLightSourceXPercent(), -200, 200 };
     inline static Setting<int> TreeMapLightSourceY{ OptionsTreeMap, L"TreeMapLightSourceY", CTreeMap::GetDefaults().GetLightSourceYPercent(), -200, 200 };
     inline static Setting<int> TreeMapScaleFactor{ OptionsTreeMap, L"TreeMapScaleFactor", CTreeMap::GetDefaults().GetScaleFactorPercent(), 0, 100 };
+    // 0 = dark grayscale, 1 = original colors.
+    inline static Setting<int> TreeMapPalette{ OptionsTreeMap, L"TreeMapPalette", 0, 0, 1 };
     inline static Setting<int> TreeMapStyle{ OptionsTreeMap, L"TreeMapStyle", static_cast<int>(CTreeMap::GetDefaults().style), static_cast<int>(TreeMapLayout::Style::Rows), static_cast<int>(TreeMapLayout::Style::Moore) };
     inline static Setting<int> GraphPaneStyle{ OptionsTreeMap, L"GraphPaneStyle", EncodeGraphPane(GraphPane::TreeMap), 0, MaxPersistedGraphPane };
     inline static Setting<int> TreeMapMaxDepth{ OptionsTreeMap, L"TreeMapMaxDepth", 6, 1, 64 };

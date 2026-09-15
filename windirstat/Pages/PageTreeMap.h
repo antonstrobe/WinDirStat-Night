@@ -39,6 +39,7 @@ class CPageTreeMap final : public COptionsPage
 protected:
     void UpdateOptions(bool save = true);
     void UpdateStatics();
+    void UpdatePaletteStatus();
     void OnSomethingChanged();
     void ValuesAltered(bool altered = true);
 
@@ -52,6 +53,11 @@ protected:
     CTreeMap::Options m_undo{}; // Valid, if m_altered = false
 
     CTreeMapPreview m_preview;
+
+    CComboBox m_paletteCombo;
+    int m_palette = 0;
+    CToolTipCtrl m_paletteToolTip;
+    CStringW m_paletteTip;
 
     CComboBox m_styleCombo;
     int m_style = 0;
@@ -87,4 +93,6 @@ protected:
     afx_msg void OnLightSourceChanged(NMHDR*, LRESULT*);
     afx_msg void OnSetModified();
     afx_msg void OnBnClickedReset();
+    afx_msg void OnPaletteChanged();
+    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

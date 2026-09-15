@@ -184,17 +184,30 @@ void DrawShadowedExtensionText(CDC* const pdc, const std::wstring_view text, con
 
 void CTreeMap::GetDefaultPalette(std::vector<COLORREF>& palette)
 {
-    palette.resize(std::size(DefaultCushionColors));
-    std::ranges::transform(DefaultCushionColors, palette.begin(),
-        [](const COLORREF color) { return CColorSpace::MakeBrightColor(color, CColorSpace::GraphPaletteBrightness); });
+    GetPalette(palette, COptions::TreeMapPalette == 0);
 }
 
-std::unique_ptr<CItem> CTreeMap::BuildDemoTree()
+void CTreeMap::GetPalette(std::vector<COLORREF>& palette, const bool grayscale)
+{
+    if (grayscale)
+    {
+        // Equalizing brightness would collapse every gray to the same shade.
+        palette.assign(std::begin(DefaultCushionColors), std::end(DefaultCushionColors));
+    }
+    else
+    {
+        palette.resize(std::size(OriginalCushionColors));
+        std::ranges::transform(OriginalCushionColors, palette.begin(),
+            [](const COLORREF color) { return CColorSpace::MakeBrightColor(color, CColorSpace::GraphPaletteBrightness); });
+    }
+}
+
+std::unique_ptr<CItem> CTreeMap::BuildDemoTree(const bool grayscale)
 {
     [[msvc::noinline_calls]]
     {
         std::vector<COLORREF> colors;
-        GetDefaultPalette(colors);
+        GetPalette(colors, grayscale);
         int colorIndex = -1;
 
         auto getNextColor = [&colors, &colorIndex]
@@ -1004,9 +1017,19 @@ void CTreeMapPreview::SetOptions(const CTreeMap::Options* options)
     Invalidate();
 }
 
+void CTreeMapPreview::SetPalette(const bool grayscale)
+{
+    if (m_grayscale == grayscale) return;
+    m_grayscale = grayscale;
+    BuildDemoData();
+    Invalidate();
+}
+
 void CTreeMapPreview::BuildDemoData()
 {
-    m_root = CTreeMap::BuildDemoTree().release();
+    auto root = CTreeMap::BuildDemoTree(m_grayscale);
+    delete m_root;
+    m_root = root.release();
 }
 
 void CTreeMapPreview::OnPaint()

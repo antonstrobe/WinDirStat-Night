@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   get-version:
+    if: github.repository == 'windirstat/windirstat'
     runs-on: windows-latest
     outputs:
       version: ${{ steps.get-version.outputs.version }}

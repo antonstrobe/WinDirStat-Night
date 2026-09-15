@@ -75,26 +75,26 @@ void DarkMode::SetAppDarkMode() noexcept
         OriginalColors[i] = GetSysColor(i);
     }
 
-    // Setup dark mode colors
+    // Night palette: low-glare surfaces, readable muted text, and green selection.
     DarkModeColors = OriginalColors;
-    DarkModeColors[CTLCOLOR_DLG] = RGB(40, 40, 40);
-    DarkModeColors[CTLCOLOR_STATIC] = RGB(40, 40, 40);
-    DarkModeColors[CTLCOLOR_EDIT] = RGB(32, 32, 32);
-    DarkModeColors[CTLCOLOR_LISTBOX] = RGB(32, 32, 32);
-    DarkModeColors[COLOR_3DHIGHLIGHT] = RGB(70, 70, 70);
-    DarkModeColors[COLOR_3DLIGHT] = RGB(60, 60, 60);
-    DarkModeColors[COLOR_3DSHADOW] = RGB(20, 20, 20);
-    DarkModeColors[COLOR_BACKGROUND] = RGB(25, 25, 25);
-    DarkModeColors[COLOR_BTNFACE] = RGB(45, 45, 45);
-    DarkModeColors[COLOR_BTNTEXT] = RGB(220, 220, 220);
-    DarkModeColors[COLOR_GRAYTEXT] = RGB(120, 120, 120);
-    DarkModeColors[COLOR_HIGHLIGHT] = RGB(0, 120, 215);
-    DarkModeColors[COLOR_HIGHLIGHTTEXT] = RGB(255, 255, 255);
-    DarkModeColors[COLOR_MENU] = RGB(35, 35, 35);
-    DarkModeColors[COLOR_MENUBAR] = RGB(30, 30, 30);
-    DarkModeColors[COLOR_WINDOW] = RGB(32, 32, 32);
-    DarkModeColors[COLOR_WINDOWFRAME] = RGB(50, 50, 50);
-    DarkModeColors[COLOR_WINDOWTEXT] = RGB(220, 220, 220);
+    DarkModeColors[CTLCOLOR_DLG] = RGB(24, 29, 38);
+    DarkModeColors[CTLCOLOR_STATIC] = RGB(24, 29, 38);
+    DarkModeColors[CTLCOLOR_EDIT] = RGB(18, 23, 31);
+    DarkModeColors[CTLCOLOR_LISTBOX] = RGB(18, 23, 31);
+    DarkModeColors[COLOR_3DHIGHLIGHT] = RGB(66, 78, 93);
+    DarkModeColors[COLOR_3DLIGHT] = RGB(49, 60, 74);
+    DarkModeColors[COLOR_3DSHADOW] = RGB(12, 16, 23);
+    DarkModeColors[COLOR_BACKGROUND] = RGB(15, 20, 28);
+    DarkModeColors[COLOR_BTNFACE] = RGB(31, 39, 50);
+    DarkModeColors[COLOR_BTNTEXT] = RGB(232, 237, 243);
+    DarkModeColors[COLOR_GRAYTEXT] = RGB(158, 169, 184);
+    DarkModeColors[COLOR_HIGHLIGHT] = RGB(27, 107, 75);
+    DarkModeColors[COLOR_HIGHLIGHTTEXT] = RGB(242, 255, 249);
+    DarkModeColors[COLOR_MENU] = RGB(24, 31, 41);
+    DarkModeColors[COLOR_MENUBAR] = RGB(18, 24, 33);
+    DarkModeColors[COLOR_WINDOW] = RGB(22, 28, 37);
+    DarkModeColors[COLOR_WINDOWFRAME] = RGB(32, 41, 53);
+    DarkModeColors[COLOR_WINDOWTEXT] = RGB(232, 237, 243);
 
     // Update colors
     SetupGlobalColors();
@@ -207,7 +207,7 @@ HBRUSH DarkMode::OnCtlColor(CDC* pDC, UINT nCtlColor)
          nCtlColor == CTLCOLOR_EDIT || nCtlColor == CTLCOLOR_LISTBOX))
     {
         pDC->SetTextColor(WdsSysColor(COLOR_WINDOWTEXT));
-        pDC->SetBkColor(WdsSysColor(CTLCOLOR_DLG));
+        pDC->SetBkColor(WdsSysColor(COLOR_WINDOW));
         pDC->SetBkMode(nCtlColor == CTLCOLOR_STATIC ? TRANSPARENT : OPAQUE);
         return GetDialogBackgroundBrush();
     }

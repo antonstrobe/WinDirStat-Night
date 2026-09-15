@@ -4,6 +4,7 @@ on:
     types: [published]
 jobs:
   publish:
+    if: github.repository == 'windirstat/windirstat'
     runs-on: windows-latest
     steps:
       - name: Get version

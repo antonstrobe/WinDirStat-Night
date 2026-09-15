@@ -32,6 +32,7 @@ CPageTreeMap::CPageTreeMap()
 
 BOOL CPageTreeMap::PreTranslateMessage(MSG* pMsg)
 {
+    if (m_paletteToolTip.GetSafeHwnd()) m_paletteToolTip.RelayEvent(pMsg);
     if (pMsg->message == WM_MOUSEWHEEL)
     {
         CPoint pt(pMsg->pt);
@@ -72,6 +73,7 @@ void CPageTreeMap::DoDataExchange(CDataExchange* pDX)
 
     DDX_Control(pDX, IDC_PREVIEW, m_preview);
     DDX_Control(pDX, IDC_TREEMAPSTYLE, m_styleCombo);
+    DDX_Control(pDX, IDC_TREEMAPPALETTE, m_paletteCombo);
     DDX_Control(pDX, IDC_TREEMAPHIGHLIGHTCOLOR, m_highlightColor);
     DDX_Control(pDX, IDC_TREEMAPGRIDCOLOR, m_gridColor);
     DDX_Control(pDX, IDC_BRIGHTNESS, m_brightness);
@@ -85,10 +87,13 @@ void CPageTreeMap::DoDataExchange(CDataExchange* pDX)
     {
         UpdateOptions(false);
         UpdateStatics();
+        m_preview.SetPalette(m_palette == 0);
         m_preview.SetOptions(&m_options);
+        UpdatePaletteStatus();
     }
 
     DDX_CBIndex(pDX, IDC_TREEMAPSTYLE, m_style);
+    DDX_CBIndex(pDX, IDC_TREEMAPPALETTE, m_palette);
     DDX_Check(pDX, IDC_TREEMAPGRID, m_grid);
 
     DDX_Text(pDX, IDC_STATICBRIGHTNESS, m_sBrightness);
@@ -113,6 +118,8 @@ void CPageTreeMap::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CPageTreeMap, COptionsPage)
     ON_WM_HSCROLL()
+    ON_WM_CTLCOLOR()
+    ON_CBN_SELCHANGE(IDC_TREEMAPPALETTE, OnPaletteChanged)
     ON_NOTIFY(COLBN_CHANGED, IDC_TREEMAPGRIDCOLOR, OnColorChangedTreeMapGrid)
     ON_NOTIFY(COLBN_CHANGED, IDC_TREEMAPHIGHLIGHTCOLOR, OnColorChangedTreeMapHighlight)
     ON_CBN_SELCHANGE(IDC_TREEMAPSTYLE, OnSetModified)
@@ -133,6 +140,15 @@ void CPageTreeMap::InitializePage()
     m_lightSource.SetRange(CSize(400, 400));
 
     m_options = COptions::TreeMapOptions;
+    m_palette = COptions::TreeMapPalette;
+    m_paletteCombo.AddString(Localization::Lookup(IDS_PAGE_TREEMAP_PALETTE_GRAY).c_str());
+    m_paletteCombo.AddString(Localization::Lookup(IDS_PAGE_TREEMAP_PALETTE_COLOR).c_str());
+    if (m_paletteToolTip.Create(this, TTS_ALWAYSTIP))
+    {
+        m_paletteToolTip.SetMaxTipWidth(420);
+        m_paletteToolTip.AddTool(&m_paletteCombo, L"");
+        m_paletteToolTip.Activate(TRUE);
+    }
     m_highlightColor.SetColor(COptions::TreeMapHighlightColor);
     for (const std::wstring& style : SplitString(
         Localization::Lookup(IDS_PAGE_TREEMAP_STYLES), L','))
@@ -148,7 +164,12 @@ void CPageTreeMap::OnOK()
 {
     UpdateData();
 
+    const bool paletteChanged = m_palette != COptions::TreeMapPalette;
+    COptions::TreeMapPalette = m_palette;
+    auto* const model = CWinDirStatModel::Get();
+    if (paletteChanged && model->IsRootDone()) model->RebuildExtensionData();
     COptions::SetTreeMapOptions(m_options);
+    if (paletteChanged) model->NotifyPanes(MODEL_CHANGE_NONE);
     COptions::TreeMapHighlightColor = m_highlightColor.GetColor();
     CWinDirStatModel::Get()->NotifyPanes(MODEL_CHANGE_SELECTION_STYLE);
 
@@ -258,4 +279,33 @@ void CPageTreeMap::OnBnClickedReset()
     ValuesAltered(!m_altered);
     UpdateData(FALSE);
     SetModified();
+}
+
+void CPageTreeMap::OnPaletteChanged()
+{
+    OnSomethingChanged();
+}
+
+void CPageTreeMap::UpdatePaletteStatus()
+{
+    if (!m_paletteCombo.GetSafeHwnd()) return;
+    const bool grayscale = m_palette == 0;
+    const auto status = Localization::Lookup(grayscale ?
+        IDS_PAGE_TREEMAP_PALETTE_GRAY_SELECTED : IDS_PAGE_TREEMAP_PALETTE_COLOR_SELECTED);
+    SetDlgItemText(IDC_TREEMAPPALETTE_STATUS, status.c_str());
+    m_paletteTip = Localization::Lookup(grayscale ?
+        IDS_PAGE_TREEMAP_PALETTE_GRAY_TIP : IDS_PAGE_TREEMAP_PALETTE_COLOR_TIP).c_str();
+    if (m_paletteToolTip.GetSafeHwnd()) m_paletteToolTip.UpdateTipText(m_paletteTip, &m_paletteCombo);
+}
+
+HBRUSH CPageTreeMap::OnCtlColor(CDC* pDC, CWnd* pWnd, const UINT nCtlColor)
+{
+    HBRUSH brush = DarkMode::OnCtlColor(pDC, nCtlColor);
+    if (!brush) brush = CMFCPropertyPage::OnCtlColor(pDC, pWnd, nCtlColor);
+    if (pWnd && pWnd->GetDlgCtrlID() == IDC_TREEMAPPALETTE_STATUS)
+    {
+        pDC->SetTextColor(DarkMode::IsDarkModeActive() ? RGB(110, 220, 154) : RGB(17, 105, 54));
+        pDC->SetBkMode(TRANSPARENT);
+    }
+    return brush;
 }

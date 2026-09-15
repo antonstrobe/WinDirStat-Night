@@ -404,7 +404,13 @@ void CLayoutPopup::DrawFileTypesPane(CDC& dc, CRect r) const
 
 void CLayoutPopup::DrawVisualizationPane(CDC& dc, CRect r, int /*cardIdx*/) const
 {
-    static const std::unique_ptr<CItem> demoRoot = CTreeMap::BuildDemoTree();
+    static std::unique_ptr<CItem> demoRoot;
+    static int palette = -1;
+    if (!demoRoot || palette != COptions::TreeMapPalette)
+    {
+        palette = COptions::TreeMapPalette;
+        demoRoot = CTreeMap::BuildDemoTree(palette == 0);
+    }
     CTreeMap treeMap;
     treeMap.DrawTreeMap(&dc, r, demoRoot.get(), &COptions::TreeMapOptions);
 }
